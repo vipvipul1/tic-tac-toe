@@ -2,15 +2,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.scaler</groupId>
+  <groupId>org.vip</groupId>
   <artifactId>tic-tac-toe</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>tic-tac-toe</name>
-  <url>http://maven.apache.org</url>
 
   <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

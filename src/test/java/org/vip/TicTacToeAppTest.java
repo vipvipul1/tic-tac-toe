@@ -1,4 +1,4 @@
-package org.scaler;
+package org.vip;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

@@ -5,6 +5,7 @@ import org.vip.factories.BotPlayStrategyFactory;
 import org.vip.models.*;
 import org.vip.strategies.playstrategy.BotPlayStrategy;
 import org.vip.strategies.playstrategy.HumanPlayStrategy;
+import org.vip.strategies.playstrategy.PlayStrategy;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -34,7 +35,7 @@ public class TicTacToeApp {
             String difficultyLevel = br.readLine().toUpperCase();
 
             BotPlayStrategy botPlayStrategy = BotPlayStrategyFactory.getBotPlayStrategy(difficultyLevel);
-            Player bot = new Bot(botName, botSymbol, PlayerType.BOT, DifficultyLevel.valueOf(difficultyLevel), botPlayStrategy);
+            Player bot = new Bot(botName, botSymbol, PlayerType.BOT, botPlayStrategy, DifficultyLevel.valueOf(difficultyLevel));
             players.add(bot);
         }
         for (int i = 0; i < noOfHumans; i++) {
@@ -44,7 +45,8 @@ public class TicTacToeApp {
             System.out.print("Enter Player " + (i + 1) + " Symbol: ");
             Character playerSymbol = br.readLine().charAt(0);
 
-            Player humanPlayer = new Player(playerName, playerSymbol, PlayerType.HUMAN, new HumanPlayStrategy());
+            PlayStrategy playStrategy = new HumanPlayStrategy();
+            Player humanPlayer = new Player(playerName, playerSymbol, PlayerType.HUMAN, playStrategy);
             players.add(humanPlayer);
         }
 

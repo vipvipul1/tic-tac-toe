@@ -32,4 +32,11 @@ public class Board {
             System.out.println("|");
         }
     }
+
+    public void applyMove(Move move) {
+        int row = move.getCell().getRow();
+        int col = move.getCell().getCol();
+        cells.get(row).get(col).setCellState(CellState.FILLED);
+        cells.get(row).get(col).setPlayer(move.getPlayer());
+    }
 }

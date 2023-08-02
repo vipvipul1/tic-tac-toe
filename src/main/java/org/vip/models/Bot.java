@@ -1,10 +1,12 @@
 package org.vip.models;
 
+import org.vip.strategies.playstrategy.PlayStrategy;
+
 public class Bot extends Player {
     private DifficultyLevel difficultyLevel;
 
-    public Bot(String name, Character symbol, PlayerType playerType, DifficultyLevel difficultyLevel) {
-        super(name, symbol, playerType);
+    public Bot(String name, Character symbol, PlayerType playerType, DifficultyLevel difficultyLevel, PlayStrategy playStrategy) {
+        super(name, symbol, playerType, playStrategy);
         this.difficultyLevel = difficultyLevel;
     }
 

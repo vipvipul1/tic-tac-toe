@@ -7,10 +7,12 @@ import org.vip.exceptions.InvalidSymbolsSelectedException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 public class Game {
     private Board board;
     private List<Player> players;
+    private List<Move> moves;
     private Integer nextPlayerIndex;
     private GameStatus status;
     private Player winner;
@@ -21,6 +23,10 @@ public class Game {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public List<Move> getMoves() {
+        return moves;
     }
 
     public Integer getNextPlayerIndex() {
@@ -45,6 +51,29 @@ public class Game {
 
     public void setWinner(Player winner) {
         this.winner = winner;
+    }
+
+    public void displayBoard() {
+        this.board.displayBoard();
+    }
+
+    public void makeNextMove() {
+        Player player = players.get(nextPlayerIndex);
+        System.out.print("It's " + player.getName() + "'s turn: ");
+
+        Move move = player.chooseNextMove(board);
+        int chosenRow = move.getCell().getRow(), chosenCol = move.getCell().getCol();
+        Cell boardCell = board.getCells().get(chosenRow).get(chosenCol);
+        if (boardCell.getCellState() == CellState.EMPTY) {
+            board.applyMove(move);
+            moves.add(move);
+
+            // check winner
+
+            nextPlayerIndex = (nextPlayerIndex + 1) % players.size();
+        } else {
+            System.out.println("Chosen cell is already filled! Choose another cell!");
+        }
     }
 
     // Using Builder Design Pattern to build the Game.
@@ -83,7 +112,7 @@ public class Game {
             }
         }
 
-        public Game build() {
+        public Game build() throws InvalidNoOfPlayersException, InvalidDimensionException, InvalidSymbolsSelectedException {
             Game game = null;
             try {
                 validateGameInit();
@@ -91,9 +120,11 @@ public class Game {
                 game.status = GameStatus.IN_PROGRESS;
                 game.players = this.players;
                 game.board = new Board(this.dimension);
-                game.nextPlayerIndex = 0;
+                game.nextPlayerIndex = new Random().nextInt(game.players.size());
+                game.moves = new ArrayList<>();
             } catch (InvalidNoOfPlayersException | InvalidDimensionException | InvalidSymbolsSelectedException e) {
                 System.out.println(e.getMessage());
+                throw e;
             }
             return game;
         }

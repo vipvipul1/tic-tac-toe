@@ -1,11 +1,10 @@
-package org.vip.factories;
+package org.vip.strategies.playstrategy;
 
 import org.vip.models.DifficultyLevel;
 import org.vip.strategies.playstrategy.BotPlayStrategy;
 import org.vip.strategies.playstrategy.EasyBotPlayStrategy;
 import org.vip.strategies.playstrategy.HardBotPlayStrategy;
 import org.vip.strategies.playstrategy.MediumBotPlayStrategy;
-
 
 // - This is not the actual Factory Design Pattern implementation.
 // - The name is BotPlayStrategyFactory just for clarity that this class

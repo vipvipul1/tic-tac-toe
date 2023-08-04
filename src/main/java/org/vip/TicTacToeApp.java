@@ -1,7 +1,7 @@
 package org.vip;
 
 import org.vip.controllers.GameController;
-import org.vip.factories.BotPlayStrategyFactory;
+import org.vip.strategies.playstrategy.BotPlayStrategyFactory;
 import org.vip.models.*;
 import org.vip.strategies.playstrategy.BotPlayStrategy;
 import org.vip.strategies.playstrategy.HumanPlayStrategy;
@@ -61,10 +61,18 @@ public class TicTacToeApp {
             System.out.println("Do you want to undo (y/n) ?");
             char isUndo = br.readLine().charAt(0);
             if ('y' == isUndo) {
-                gameController.undoMove();
+                gameController.undoMove(game);
             } else {
                 gameController.makeNextMove(game);
             }
+        }
+        System.out.println("Current Board:");
+        gameController.displayBoard(game);
+
+        if (game.getStatus() == GameStatus.ENDED) {
+            System.out.println(game.getWinner().getName() + " is the Winner!!");
+        } else {
+            System.out.println("Game Draw!!");
         }
     }
 }

@@ -39,4 +39,12 @@ public class Board {
         cells.get(row).get(col).setCellState(CellState.FILLED);
         cells.get(row).get(col).setPlayer(move.getPlayer());
     }
+
+    public void undoMove(Move move) {
+        int removeRow = move.getCell().getRow();
+        int removeCol = move.getCell().getCol();
+        Cell boardCell = cells.get(removeRow).get(removeCol);
+        boardCell.setCellState(CellState.EMPTY);
+        boardCell.setPlayer(null);
+    }
 }

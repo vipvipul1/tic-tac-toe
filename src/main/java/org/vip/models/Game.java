@@ -3,6 +3,10 @@ package org.vip.models;
 import org.vip.exceptions.InvalidDimensionException;
 import org.vip.exceptions.InvalidNoOfPlayersException;
 import org.vip.exceptions.InvalidSymbolsSelectedException;
+import org.vip.strategies.winstrategy.HighPerformanceWinStrategy;
+import org.vip.strategies.winstrategy.WinStrategy;
+import org.vip.strategies.winstrategy.WinStrategyFactory;
+import org.vip.systemutilities.Device;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,22 +15,40 @@ import java.util.Random;
 
 public class Game {
     private Board board;
+    private Integer filledCells;
     private List<Player> players;
-    private List<Move> moves;
     private Integer nextPlayerIndex;
+    private List<Move> moves;
     private GameStatus status;
     private Player winner;
+    private WinStrategy winStrategy;
+
+    public GameStatus getStatus() {
+        return status;
+    }
 
     public Board getBoard() {
         return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
+    public Integer getFilledCells() {
+        return filledCells;
+    }
+
+    public void setFilledCells(Integer filledCells) {
+        this.filledCells = filledCells;
     }
 
     public List<Player> getPlayers() {
         return players;
     }
 
-    public List<Move> getMoves() {
-        return moves;
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
     public Integer getNextPlayerIndex() {
@@ -37,8 +59,12 @@ public class Game {
         this.nextPlayerIndex = nextPlayerIndex;
     }
 
-    public GameStatus getStatus() {
-        return status;
+    public List<Move> getMoves() {
+        return moves;
+    }
+
+    public void setMoves(List<Move> moves) {
+        this.moves = moves;
     }
 
     public void setStatus(GameStatus status) {
@@ -53,26 +79,61 @@ public class Game {
         this.winner = winner;
     }
 
+    public WinStrategy getWinStrategy() {
+        return winStrategy;
+    }
+
+    public void setWinStrategy(WinStrategy winStrategy) {
+        this.winStrategy = winStrategy;
+    }
+
     public void displayBoard() {
         this.board.displayBoard();
     }
 
     public void makeNextMove() {
         Player player = players.get(nextPlayerIndex);
-        System.out.print("It's " + player.getName() + "'s turn: ");
+        System.out.println("It's " + player.getName() + "'s turn");
 
         Move move = player.chooseNextMove(board);
-        int chosenRow = move.getCell().getRow(), chosenCol = move.getCell().getCol();
-        Cell boardCell = board.getCells().get(chosenRow).get(chosenCol);
-        if (boardCell.getCellState() == CellState.EMPTY) {
-            board.applyMove(move);
-            moves.add(move);
+        if (move != null) {
+            int chosenRow = move.getCell().getRow(), chosenCol = move.getCell().getCol();
+            Cell boardCell = board.getCells().get(chosenRow).get(chosenCol);
+            if (boardCell.getCellState() == CellState.EMPTY) {
+                board.applyMove(move);
+                moves.add(move);
 
-            // check winner
+                // check winner
+                GameStatus gameStatus = winStrategy.checkGameStatus(board, move, moves.size());
+                if (gameStatus == GameStatus.ENDED) {
+                    winner = player;
+                }
+                status = gameStatus;
 
-            nextPlayerIndex = (nextPlayerIndex + 1) % players.size();
+                nextPlayerIndex = (nextPlayerIndex + 1) % players.size();
+            } else {
+                System.out.println("Chosen cell is already filled! Choose another cell!");
+            }
         } else {
-            System.out.println("Chosen cell is already filled! Choose another cell!");
+            System.out.println("The game is already DRAW or some internal error occurred!");
+            status = GameStatus.DRAW;
+        }
+    }
+
+    public void undoMove() {
+        if (!moves.isEmpty()) {
+            Move lastMove = moves.remove(moves.size() - 1);
+            board.undoMove(lastMove);
+            nextPlayerIndex = (nextPlayerIndex - 1 + players.size()) % players.size();
+
+            // update maps in HighPerformanceStrategy (take TA help to get rid of instanceof check)
+            if (winStrategy instanceof HighPerformanceWinStrategy) {
+                ((HighPerformanceWinStrategy) winStrategy).undoMove(lastMove);
+            }
+
+            System.out.println("Last Move '" + lastMove.getPlayer().getSymbol()
+                    + "' at (" + lastMove.getCell().getRow() + "," + lastMove.getCell().getCol() + ") "
+                    + "by " + lastMove.getPlayer().getName() + " removed!");
         }
     }
 
@@ -120,8 +181,10 @@ public class Game {
                 game.status = GameStatus.IN_PROGRESS;
                 game.players = this.players;
                 game.board = new Board(this.dimension);
+                game.filledCells = 0;
                 game.nextPlayerIndex = new Random().nextInt(game.players.size());
                 game.moves = new ArrayList<>();
+                game.winStrategy = WinStrategyFactory.getWinStrategy(Device.getPerformance(), this.dimension);
             } catch (InvalidNoOfPlayersException | InvalidDimensionException | InvalidSymbolsSelectedException e) {
                 System.out.println(e.getMessage());
                 throw e;

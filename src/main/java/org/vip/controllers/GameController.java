@@ -18,6 +18,7 @@ public class GameController {
         game.makeNextMove();
     }
 
-    public void undoMove() {
+    public void undoMove(Game game) {
+        game.undoMove();
     }
 }

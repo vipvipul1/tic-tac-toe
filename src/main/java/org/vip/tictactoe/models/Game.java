@@ -126,7 +126,6 @@ public class Game {
             board.undoMove(lastMove);
             nextPlayerIndex = (nextPlayerIndex - 1 + players.size()) % players.size();
 
-            // update maps in HighPerformanceStrategy (take TA help to get rid of instanceof check)
             if (winStrategy instanceof HighPerformanceWinStrategy) {
                 ((HighPerformanceWinStrategy) winStrategy).undoMove(lastMove);
             }
